@@ -1,2 +1,3 @@
-# ss-android
-secure tunnel for android
+# bmlfp_sdk_android
+
+安卓客户端SDK

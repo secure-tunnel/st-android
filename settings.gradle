@@ -1,0 +1,3 @@
+include ':bmf'
+include ':app'
+rootProject.name = "DemoApplication"
