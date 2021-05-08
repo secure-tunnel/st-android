@@ -37,12 +37,7 @@ public class MainActivity extends AppCompatActivity {
                                 "-----END PUBLIC KEY-----";
                         pseudo = SafeUtil.byteAppend(pseudo, publicKey.getBytes());
                         Tunnel.getInstance().init(pseudo).setUrl("http://192.168.31.192:8080/");
-                        int result = Tunnel.getInstance().connect();
-//                        if(result == BMFConstans.RESULT_OK) {
-//                            textView.setText("信道建立成功");
-//                        }else{
-//                            textView.setText("信道建立失败");
-//                        }
+                        Tunnel.getInstance().connect();
                     }
                 }).start();
 

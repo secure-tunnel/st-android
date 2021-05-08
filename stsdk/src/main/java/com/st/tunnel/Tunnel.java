@@ -1,5 +1,7 @@
 package com.st.tunnel;
 
+import android.util.Log;
+
 import com.st.BMFConstans;
 import com.st.BMFResult;
 import com.st.data.CommonData;
@@ -7,9 +9,16 @@ import com.st.data.CommonDataEntry;
 import com.st.security.SM2;
 import com.st.security.SM3;
 import com.st.security.SafeUtil;
+import com.st.tunnel.net.FuncRecall;
+import com.st.tunnel.net.FuncRecallTable;
+import com.st.tunnel.net.HttpClient;
+import com.st.tunnel.net.TcpSslClient;
 import com.st.utils.BMFMemory;
 
 import java.security.cert.CertificateException;
+
+import javax.net.ssl.HandshakeCompletedEvent;
+import javax.net.ssl.HandshakeCompletedListener;
 
 /**
  * 通道实例
@@ -17,6 +26,7 @@ import java.security.cert.CertificateException;
  * TOKEN失效则自动重新建立通道
  */
 public class Tunnel {
+    private static final String TAG = "Tunnel";
 
     private static Tunnel mTunnel;
     private byte[] mToken;
@@ -61,6 +71,11 @@ public class Tunnel {
      */
     public Tunnel setNetworkTCP(boolean flag) {
         BMFMemory.getInstance().getMap().put(BMFConstans.MEM_TUNNEL_TCP, flag);
+        if(flag) {
+            tunnelNet = new TcpSslClient();
+        }else{
+            tunnelNet = new HttpClient();
+        }
         return mTunnel;
     }
 
@@ -104,7 +119,7 @@ public class Tunnel {
         byte[] body = SafeUtil.byteAppend(pseudoA1, encypted);
         // 对body计算SM3并保存
         hashRequestHello = SM3.hash(body);
-        BMFResult response = new BMFTunnelHttp().send(url, CommonData.pack(body, true, null, 1, null, null));
+        BMFResult response = tunnelNet.send(url, CommonData.pack(body, true, null, 1, null, null));
         if(response.getCode() != BMFConstans.RESULT_OK) {
             return response;
         }
@@ -170,7 +185,7 @@ public class Tunnel {
         }
         mKeyD = SafeUtil.generateSymmetricKey(key1);
         byte[] requestData = CommonData.pack(pac, true, mToken, 2, null, null);
-        BMFResult response = new BMFTunnelHttp().send(url, requestData);
+        BMFResult response = tunnelNet.send(url, requestData);
         if(response.getCode() != BMFConstans.RESULT_OK) {
             return response;
         }
@@ -184,18 +199,28 @@ public class Tunnel {
         }
     }
 
-    public int connect() {
-        BMFResult helleResult = requestHello();
-        if(helleResult.getCode() != BMFConstans.RESULT_OK) {
-            clear();
-            return helleResult.getCode();
-        }
-        BMFResult exchangeResult = requestExchange(helleResult.getData());
-        if(exchangeResult.getCode() != BMFConstans.RESULT_OK) {
-            clear();
-            return exchangeResult.getCode();
-        }
-        return BMFConstans.RESULT_OK;
+    public void connect() {
+        tunnelNet.setHandShakeComplete(new HandshakeCompletedListener() {
+            @Override
+            public void handshakeCompleted(HandshakeCompletedEvent event) {
+                BMFResult helloResult = requestHello();
+                if(helloResult.getCode() != BMFConstans.RESULT_OK) {
+                    clear();
+                    tunnelNet.setSecureTunnelState(false);
+                    Log.e(TAG, "secure tunnel hello. " + helloResult.toString());
+                    return;
+                }
+                BMFResult exchangeResult = requestExchange(helloResult.getData());
+                if(exchangeResult.getCode() != BMFConstans.RESULT_OK) {
+                    clear();
+                    tunnelNet.setSecureTunnelState(false);
+                    Log.e(TAG, "secure tunnel exchange. " + exchangeResult.toString());
+                    return;
+                }
+                tunnelNet.setSecureTunnelState(true);
+            }
+        });
+        tunnelNet.startServer();
     }
 
     private void clear() {
@@ -207,11 +232,16 @@ public class Tunnel {
         macData = null;
     }
 
-    public byte[] send(byte[] data) {
+    /**
+     * 上层业务调用网络入口
+     * @param data
+     * @param funcRecall
+     */
+    public void sendAsync(byte[] data, FuncRecall funcRecall) {
         if(mToken == null) {
             connect();
         }
 
-        return null;
+        FuncRecallTable.getInstance().add(data, funcRecall);
     }
 }

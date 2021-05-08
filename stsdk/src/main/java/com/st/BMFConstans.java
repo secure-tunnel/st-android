@@ -12,4 +12,6 @@ public class BMFConstans {
     public static final int RESULT_HASH_TWICE_FAIL = 5;
     public static final int RESULT_HTTP_NET_FAIL = 6;
     public static final int RESULT_UNPACK_FAIL = 7;
+    public static final int RESULT_TIMER_FUNCRECALL_CLEAR = 8;
+    public static final int RESULT_TCP_IO = 9;
 }
