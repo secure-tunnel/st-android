@@ -1,4 +1,4 @@
-package com.bankcomm.bmf;
+package com.st;
 
 import com.st.data.CommonData;
 import com.st.data.CommonDataEntry;

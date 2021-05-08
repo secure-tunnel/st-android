@@ -1,4 +1,4 @@
-package com.bankcomm.bmf;
+package com.st;
 
 import android.util.Log;
 
