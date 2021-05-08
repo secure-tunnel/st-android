@@ -5,9 +5,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bankcomm.bmf.BMFConstans;
-import com.bankcomm.bmf.security.SafeUtil;
-import com.bankcomm.bmf.tunnel.Tunnel;
+import com.st.security.SafeUtil;
+import com.st.tunnel.Tunnel;
 import com.bankcomm.bmlfp.demo.R;
 
 import java.util.concurrent.Executor;
