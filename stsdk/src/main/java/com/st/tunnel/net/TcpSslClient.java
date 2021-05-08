@@ -16,7 +16,6 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.Executor;
 
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLContext;
@@ -28,10 +27,7 @@ import javax.net.ssl.X509TrustManager;
 public class TcpSslClient implements BMFTunnelNetInf {
     private static final String TAG = "TcpSslClient";
     private static TcpSslClient instance;
-    private static final String[] protocols = new String[]{"TLSv1.2"};
-    private static final String[] cihper_suties = new String[]{"TLS_RSA_WITH_AES_128_GCM_SHA256", "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384",
-            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"};
+    private static final String[] protocols = new String[]{"TLSv1.2", "TLSv1.3"};
 
     // TCP连接句柄
     private SSLSocket mSocket;
@@ -94,7 +90,6 @@ public class TcpSslClient implements BMFTunnelNetInf {
         try {
             SSLSocketFactory factory = trustAllHttpsCertificates();
             mSocket = (SSLSocket) factory.createSocket(NetConfigure.addr, NetConfigure.port);
-            mSocket.setEnabledCipherSuites(cihper_suties);
             mSocket.setEnabledProtocols(protocols);
             mSocket.setKeepAlive(true);
             mSocket.addHandshakeCompletedListener(handshakeCompletedListener);
