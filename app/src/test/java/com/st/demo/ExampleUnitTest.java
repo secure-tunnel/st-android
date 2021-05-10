@@ -1,4 +1,4 @@
-package com.bankcomm.bmf.demo;
+package com.st.demo;
 
 import org.junit.Test;
 

@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.st.security.SafeUtil;
 import com.st.tunnel.Tunnel;
-import com.demo.R;
 
 import java.util.concurrent.Executor;
 
