@@ -1,4 +1,4 @@
-package com.bankcomm.bmf.demo;
+package com.demo;
 
 import android.os.Bundle;
 import android.widget.TextView;
@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.st.security.SafeUtil;
 import com.st.tunnel.Tunnel;
-import com.bankcomm.bmlfp.demo.R;
 
 import java.util.concurrent.Executor;
 
@@ -36,13 +35,8 @@ public class MainActivity extends AppCompatActivity {
                                 "v6T0BhtziIZx5XKcnj1NnUvbDXLMUBv1v60nxmNYvzACZ1/HMTpmi7jCRg==\n" +
                                 "-----END PUBLIC KEY-----";
                         pseudo = SafeUtil.byteAppend(pseudo, publicKey.getBytes());
-                        Tunnel.getInstance().init(pseudo).setUrl("http://192.168.31.192:8080/");
-                        int result = Tunnel.getInstance().connect();
-//                        if(result == BMFConstans.RESULT_OK) {
-//                            textView.setText("信道建立成功");
-//                        }else{
-//                            textView.setText("信道建立失败");
-//                        }
+                        Tunnel.getInstance().init(pseudo).setNetworkTCP(true);
+                        Tunnel.getInstance().connect();
                     }
                 }).start();
 

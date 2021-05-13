@@ -1,16 +1,23 @@
-package com.st.tunnel;
+package com.st.tunnel.net;
+
+import android.net.ssl.SSLSockets;
 
 import com.st.BMFConstans;
 import com.st.BMFResult;
+import com.st.tunnel.BMFTunnelNetInf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.Socket;
 import java.net.URL;
 
-public class BMFTunnelHttp implements BMFTunnelNetInf {
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
+public class HttpClient implements BMFTunnelNetInf {
 
     @Override
     public BMFResult send(String gatewayUrl, byte[] body) {
@@ -23,15 +30,7 @@ public class BMFTunnelHttp implements BMFTunnelNetInf {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setConnectTimeout(3000);
             conn.setReadTimeout(3000);
-            //设置允许输出
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
             conn.connect();
-
-            OutputStream outputStream = conn.getOutputStream();
-            outputStream.write(body);
-            outputStream.flush();
-            outputStream.close();
 
             int statusCode = conn.getResponseCode();
             if (statusCode == 200) {
@@ -61,6 +60,21 @@ public class BMFTunnelHttp implements BMFTunnelNetInf {
         return new BMFResult(buffer);
     }
 
+    @Override
+    public void setHandShakeComplete(HandshakeCompletedListener listener) {
+
+    }
+
+    @Override
+    public void startServer() {
+
+    }
+
+    @Override
+    public void setSecureTunnelState(boolean flag) {
+
+    }
+
     private static byte[] readStream(InputStream inStream) throws Exception {
 
         ByteArrayOutputStream outstream = new ByteArrayOutputStream();
@@ -73,4 +87,5 @@ public class BMFTunnelHttp implements BMFTunnelNetInf {
         inStream.close();
         return outstream.toByteArray();
     }
+
 }

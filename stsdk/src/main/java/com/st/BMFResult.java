@@ -36,4 +36,9 @@ public class BMFResult {
     public void setData(byte[] data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "BMF" + code;
+    }
 }
